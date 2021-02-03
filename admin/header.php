@@ -37,7 +37,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
       ?>
     <!-- SEARCH FORM -->
-    <form class="form-inline ml-3" method="POST" 
+    <?php if ($page !='order.php' && $page !='order_detail.php') :?>
+     <form class="form-inline ml-3" method="POST" 
     <?php if ($page=='index.php') :?>
    action="index.php"
    <?php elseif ($page=='category.php') :?>
@@ -55,6 +56,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </div>
     </form>
 
+    <?php endif ?>
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Messages Dropdown Menu -->
@@ -124,6 +126,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <i class="nav-icon fas fa-user"></i>
               <p>
               Users
+                
+              </p>
+            </a>
+          </li>
+           </li>
+          <li class="nav-item">
+            <a href="order.php" class="nav-link">
+              <i class="nav-icon fas fa-file"></i>
+              <p>
+              Order
                 
               </p>
             </a>

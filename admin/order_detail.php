@@ -23,13 +23,13 @@
 
  ?>
           <?php require("header.php"); ?>
-             <h1 class="m-0">Product list</h1>
+             <h1 class="m-0">order_list_detail</h1>
           </div><!-- /.col --><br><br>
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title"></h3><br>
-                 <a href="product_add.php" class="btn btn-info">new product add</a>
+                 <a href="order.php" class="btn btn-info">Back</a>
               </div>
               <?php 
 
@@ -43,31 +43,18 @@
               $offset=($pageno-1)*$noOfrec;
 
 
-              if (empty($_POST['search'])&&empty($_COOKIES['search'])) {
 
-                    $statment= $pdo->prepare("SELECT * FROM products ORDER BY id DESC");
+    $statment= $pdo->prepare("SELECT * FROM sale_order_detail WHERE sale_oder_id=".$_GET['id']);
               $statment->execute();
               $rawResult=$statment->FETCHALL();
               $total_pages=ceil(count($rawResult)/$noOfrec);
 
-      $statment= $pdo->prepare("SELECT * FROM products ORDER BY id DESC LIMIT $offset,$noOfrec");
+    $statment= $pdo->prepare("SELECT * FROM sale_order_detail WHERE sale_oder_id=".$_GET['id']."
+       LIMIT $offset,$noOfrec");
               $statment->execute();
               $result=$statment->FETCHALL();
-
-              }else{
-
-              $searchkey=$_POST['search']?$_POST['search']:$_COOKIES['search'];
-  $statment= $pdo->prepare("SELECT * FROM products WHERE title LIKE '%$searchkey%' 
-   ORDER BY id DESC");
-              $statment->execute();
-              $rawResult=$statment->FETCHALL();
-              $total_pages=ceil(count($rawResult)/$noOfrec);
-
-$statment= $pdo->prepare("SELECT * FROM products WHERE title LIKE '%$searchkey%' ORDER BY id DESC LIMIT $offset,$noOfrec");
-
-              $statment->execute();
-              $result=$statment->FETCHALL();
-              }
+              
+              
                
 
                ?>
@@ -78,63 +65,43 @@ $statment= $pdo->prepare("SELECT * FROM products WHERE title LIKE '%$searchkey%'
                   <thead>
                     <tr>
                       <th>id</th>
-                      <th>name</th>
-                      <th>description</th>
-                       <th>category</th>
-                      <th>Instock</th>
-                      <th>price</th>
-                     <th>action</th>
+                      <th>product</th>
+                      <th>quantity</th>
+                       <th >order date</th>
+                      
                     </tr>
                   </thead>
                   <tbody>
-                  <?php 
+                 
+                    <?php 
                 if ($result) 
                 {$i=1;
-
-                  foreach ($result as $value)  :?>
-           
-                    <?php 
-                   
-
-        $cat_statment= $pdo->prepare("SELECT * FROM categories WHERE id=".$value['category_id']);
-                    $cat_statment->execute();
-                    $cat_result=$cat_statment->FETCHALL();
-                     ?>
+                  foreach ($result as $value) 
+                  {?>
+          <?php  $p_statment=$pdo->prepare("SELECT * FROM products WHERE id=".$value['product_id']);
+                         $p_statment->execute();
+                         $p_result= $p_statment->fetchall(); ?>
                         <tr>
                       <td> <?php echo $i; ?> </td>
-                      <td style ="width:400px;"> <?php echo mo($value['name']) ;?> </td>
-                      <td style ="width:450px;">
-                      <?php echo substr(mo( $value['description']),0,30) ;?>
+                      <td style ="width:400px;"> <?php echo mo($p_result[0]['name']) ;?> </td>
+                    <td > 
+                      <?php echo mo( $value['quantity']);?>
                         
                       </td>
-                      <td><?php echo mo($cat_result[0]['name']) ;?></td>
-                      <td><?php echo mo($value['quantity']) ;?></td>
-                      <td><?php echo mo($value['price']) ;?></td>
-                      <td>
-                        <div class="btn-group">
-                          
-                        <div>
-             
-                      <a href="product_edit.php?id=<?php echo $value['id']; ?>"  class="btn btn-warning">Edit</a></div><br>
-                      <div>
-                      
-                      <a href="product_delete.php?id=<?php echo $value['id']; ?>" 
-                      onclick="return confirm('ARE you sure to delete?')" class="btn btn-danger">Delete</a></div></div>
-                      </td>
+                      <td><?= mo(date('Y-m-d',strtotime($value['order_date'])))?> </td>
+                     
                       </tr>
                     
               <?php $i++;
-                  endforeach;
+                  }
                 }
 
                   ?>
 
-                    
                       
                   </tbody>
                 </table><br>
-              
-                    <nav aria-label="Page navigation example" style="float:right;">
+              <nav aria-label="Page navigation example" style="float:right;">
                 <ul class="pagination">
                   <li class="page-item"><a class="page-link" href="?pageno=1">First</a></li>
                   <li class="page-item" <?php if($pageno<=1){echo 'disabled';} ?>>
@@ -155,7 +122,7 @@ $statment= $pdo->prepare("SELECT * FROM products WHERE title LIKE '%$searchkey%'
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
-
+   
     <!-- Main content -->
     <div class="content">
       <div class="container-fluid">
